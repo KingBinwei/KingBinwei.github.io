@@ -1,4 +1,4 @@
-const STORAGE_KEY = "7heFoo1-site-state-v1";
+const STORAGE_KEY = "7heFoo1-site-state-v2";
 
 const demoState = {
   posts: [
@@ -64,8 +64,15 @@ const demoState = {
   activeSectionId: "sec-writing",
 };
 
+const notePosts = Array.isArray(window.NOTE_POSTS) ? window.NOTE_POSTS : [];
+const initialState = {
+  ...demoState,
+  posts: mergePosts(notePosts, demoState.posts),
+};
+
 let state = loadState();
 let toastTimer = 0;
+const expandedPostIds = new Set();
 
 const els = {
   blogForm: document.querySelector("#blog-form"),
@@ -188,6 +195,15 @@ els.posts.addEventListener("click", (event) => {
     showToast(post.pinned ? "文章已置顶" : "文章已取消置顶");
   }
 
+  if (button.dataset.postAction === "toggle") {
+    if (expandedPostIds.has(post.id)) {
+      expandedPostIds.delete(post.id);
+    } else {
+      expandedPostIds.add(post.id);
+    }
+    render();
+  }
+
   if (button.dataset.postAction === "delete") {
     if (!window.confirm("确定删除这篇文章？")) return;
     state.posts = state.posts.filter((item) => item.id !== post.id);
@@ -209,7 +225,7 @@ els.worksList.addEventListener("click", (event) => {
 
 els.resetDemo.addEventListener("click", () => {
   if (!window.confirm("恢复示例会覆盖当前本地内容，确定继续？")) return;
-  state = cloneState(demoState);
+  state = cloneState(initialState);
   saveState();
   render();
   showToast("示例内容已恢复");
@@ -242,25 +258,40 @@ function renderPosts() {
 
   els.posts.innerHTML = sortedPosts
     .map(
-      (post) => `
-        <article class="post-card ${post.pinned ? "pinned" : ""}">
-          <div class="post-meta">
-            <span>${formatDate(post.createdAt)}</span>
-            ${post.pinned ? "<span>置顶</span>" : ""}
-          </div>
-          <h3>${escapeHtml(post.title)}</h3>
-          ${formatBody(post.body)}
-          ${renderTags(post.tags)}
-          <div class="card-actions">
-            <button class="button ghost" type="button" data-post-action="pin" data-post-id="${post.id}">
-              ${post.pinned ? "取消置顶" : "置顶"}
-            </button>
-            <button class="button danger" type="button" data-post-action="delete" data-post-id="${post.id}">
-              删除
-            </button>
-          </div>
-        </article>
-      `
+      (post) => {
+        const body = normalizeText(post.body);
+        const isLong = body.length > 900;
+        const isExpanded = expandedPostIds.has(post.id) || !isLong;
+        const visibleBody = isExpanded ? body : `${body.slice(0, 760)}...`;
+
+        return `
+          <article class="post-card ${post.pinned ? "pinned" : ""}">
+            <div class="post-meta">
+              <span>${formatDate(post.createdAt)}</span>
+              ${post.pinned ? "<span>置顶</span>" : ""}
+              ${post.sourcePath ? `<span>${escapeHtml(post.sourcePath)}</span>` : ""}
+            </div>
+            <h3>${escapeHtml(post.title)}</h3>
+            ${formatBody(visibleBody)}
+            ${renderTags(post.tags)}
+            <div class="card-actions">
+              ${
+                isLong
+                  ? `<button class="button secondary" type="button" data-post-action="toggle" data-post-id="${post.id}" aria-expanded="${isExpanded}">
+                      ${isExpanded ? "收起" : "阅读全文"}
+                    </button>`
+                  : ""
+              }
+              <button class="button ghost" type="button" data-post-action="pin" data-post-id="${post.id}">
+                ${post.pinned ? "取消置顶" : "置顶"}
+              </button>
+              <button class="button danger" type="button" data-post-action="delete" data-post-id="${post.id}">
+                删除
+              </button>
+            </div>
+          </article>
+        `;
+      }
     )
     .join("");
 }
@@ -385,7 +416,7 @@ function getActiveSection() {
 function loadState() {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return cloneState(demoState);
+    if (!raw) return cloneState(initialState);
     const parsed = JSON.parse(raw);
     return {
       posts: Array.isArray(parsed.posts) ? parsed.posts : [],
@@ -394,8 +425,17 @@ function loadState() {
       activeSectionId: parsed.activeSectionId || "",
     };
   } catch (error) {
-    return cloneState(demoState);
+    return cloneState(initialState);
   }
+}
+
+function mergePosts(...groups) {
+  const seen = new Set();
+  return groups.flat().filter((post) => {
+    if (!post || !post.id || seen.has(post.id)) return false;
+    seen.add(post.id);
+    return true;
+  });
 }
 
 function saveState() {
