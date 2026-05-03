@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>7heFoo1 | 个人博客与创作发布</title>
+    <meta
+      name="description"
+      content="7heFoo1 的个人博客与创作作品发布站点。"
+    />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="brand" href="#home" aria-label="7heFoo1 首页">
+        <span class="brand-mark" aria-hidden="true">7F</span>
+        <span>7heFoo1</span>
+      </a>
+      <nav class="topnav" aria-label="主导航">
+        <a href="#blog">博客</a>
+        <a href="#works">作品</a>
+        <a href="#profile">档案</a>
+      </nav>
+    </header>
+
+    <main id="home" class="site-shell">
+      <section class="intro-band" aria-label="7heFoo1">
+        <div class="intro-copy">
+          <p class="eyebrow">Personal Publishing Space</p>
+          <h1>7heFoo1</h1>
+          <p>
+            博客是这里的中心，作品是它向外延展的枝节。文字、图像、声音、项目记录，都可以有自己的分区。
+          </p>
+          <div class="intro-actions">
+            <a class="button primary" href="#blog">写博客</a>
+            <a class="button secondary" href="#works">发布作品</a>
+          </div>
+        </div>
+        <div class="identity-visual" aria-hidden="true">
+          <canvas class="identity-canvas"></canvas>
+          <div class="visual-note note-main">
+            <span>Blog</span>
+            <strong>Daily Log 03</strong>
+            <p>ideas, drafts, field notes</p>
+          </div>
+          <div class="visual-note note-side">
+            <span>Works</span>
+            <strong>Archive Sections</strong>
+            <p>writing / visual / project</p>
+          </div>
+          <div class="visual-tabs">
+            <i></i>
+            <i></i>
+            <i></i>
+          </div>
+        </div>
+      </section>
+
+      <section class="overview-strip" aria-label="站点概览">
+        <div>
+          <strong id="post-count">0</strong>
+          <span>篇文章</span>
+        </div>
+        <div>
+          <strong id="work-count">0</strong>
+          <span>件作品</span>
+        </div>
+        <div>
+          <strong id="section-count">0</strong>
+          <span>个作品分区</span>
+        </div>
+      </section>
+
+      <section id="blog" class="workspace-grid" aria-labelledby="blog-title">
+        <div class="section-heading">
+          <p class="eyebrow">Blog Core</p>
+          <h2 id="blog-title">博客</h2>
+        </div>
+
+        <form id="blog-form" class="editor-panel" autocomplete="off">
+          <div class="field-row">
+            <label for="post-title">标题</label>
+            <input id="post-title" name="title" type="text" maxlength="72" required />
+          </div>
+          <div class="field-row">
+            <label for="post-tags">标签</label>
+            <input id="post-tags" name="tags" type="text" maxlength="80" />
+          </div>
+          <div class="field-row">
+            <label for="post-body">正文</label>
+            <textarea id="post-body" name="body" rows="8" required></textarea>
+          </div>
+          <button class="button primary" type="submit">发布文章</button>
+        </form>
+
+        <div class="content-feed">
+          <div class="feed-toolbar">
+            <h3>文章流</h3>
+            <button id="reset-demo" class="button ghost" type="button">恢复示例</button>
+          </div>
+          <div id="posts" class="post-list" aria-live="polite"></div>
+        </div>
+      </section>
+
+      <section id="works" class="works-zone" aria-labelledby="works-title">
+        <div class="section-heading">
+          <p class="eyebrow">Works Studio</p>
+          <h2 id="works-title">作品发布</h2>
+        </div>
+
+        <div class="works-layout">
+          <aside class="section-manager" aria-label="作品分区">
+            <div class="panel-title">
+              <h3>分区</h3>
+              <span id="active-section-name">未选择</span>
+            </div>
+            <div id="section-tabs" class="section-tabs" role="tablist"></div>
+
+            <form id="section-form" class="compact-form" autocomplete="off">
+              <div class="field-row">
+                <label for="section-name">新分区</label>
+                <input id="section-name" name="name" type="text" maxlength="24" required />
+              </div>
+              <div class="field-row inline-field">
+                <label for="section-color">颜色</label>
+                <input id="section-color" name="color" type="color" value="#2f8f83" />
+              </div>
+              <div class="field-row">
+                <label for="section-description">描述</label>
+                <textarea id="section-description" name="description" rows="3"></textarea>
+              </div>
+              <button class="button secondary" type="submit">创建分区</button>
+            </form>
+          </aside>
+
+          <div class="work-publisher">
+            <form id="work-form" class="editor-panel" autocomplete="off">
+              <div class="form-grid">
+                <div class="field-row">
+                  <label for="work-title">作品标题</label>
+                  <input id="work-title" name="title" type="text" maxlength="72" required />
+                </div>
+                <div class="field-row">
+                  <label for="work-format">形式</label>
+                  <select id="work-format" name="format">
+                    <option>文章</option>
+                    <option>影像</option>
+                    <option>绘画</option>
+                    <option>声音</option>
+                    <option>项目</option>
+                    <option>其他</option>
+                  </select>
+                </div>
+              </div>
+              <div class="field-row">
+                <label for="work-summary">摘要</label>
+                <textarea id="work-summary" name="summary" rows="5" required></textarea>
+              </div>
+              <div class="field-row">
+                <label for="work-link">链接</label>
+                <input id="work-link" name="link" type="url" placeholder="https://" />
+              </div>
+              <button class="button primary" type="submit">发布到当前分区</button>
+            </form>
+
+            <div id="active-section-detail" class="section-detail"></div>
+            <div id="works-list" class="works-list" aria-live="polite"></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="profile" class="profile-band" aria-labelledby="profile-title">
+        <div class="section-heading">
+          <p class="eyebrow">Profile</p>
+          <h2 id="profile-title">档案</h2>
+        </div>
+        <div class="profile-text">
+          <p>
+            7heFoo1 是一处个人笔记与作品档案。它把日常观察、长文、草稿和阶段性创作放在同一个空间里。
+          </p>
+          <p>
+            博客负责记录思考的变化，作品分区负责保存那些终于从笔记里走出来的东西。
+          </p>
+        </div>
+      </section>
+    </main>
+
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+    <script src="./app.js"></script>
+  </body>
+</html>
